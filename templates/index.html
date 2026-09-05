@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>MovieMind - Movie Recommendation System</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+</head>
+
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav>
+
+    <div class="logo">
+        🎬 <span>MovieMind</span>
+    </div>
+
+    <div class="nav-links">
+        <a href="#existing">Movies</a>
+        <a href="#custom">Custom Movie</a>
+        <a href="#results">Recommendations</a>
+    </div>
+
+</nav>
+
+
+<!-- ================= HERO SECTION ================= -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <p class="small-title">
+            ✨ SMART MOVIE RECOMMENDATION
+        </p>
+
+        <h1>
+            Find Your Next
+            <span>Favorite Movie</span>
+        </h1>
+
+        <p class="hero-text">
+            Discover movies similar to the ones you love
+            using Machine Learning and AI-powered recommendations.
+        </p>
+
+        <a href="#existing" class="hero-button">
+            🍿 Explore Movies
+        </a>
+
+    </div>
+
+
+    <div class="hero-visual">
+
+        <div class="movie-icon">
+            🎬
+        </div>
+
+        <div class="floating-card card-one">
+            ⭐ 4.8
+        </div>
+
+        <div class="floating-card card-two">
+            🎥 5000+ Movies
+        </div>
+
+        <div class="floating-card card-three">
+            🤖 AI Recommendations
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= EXISTING MOVIE ================= -->
+
+<section class="section" id="existing">
+
+    <div class="section-title">
+
+        <span>🎥</span>
+
+        <div>
+            <h2>Choose a Movie</h2>
+
+            <p>
+                Select a movie from our collection
+                and discover similar movies.
+            </p>
+        </div>
+
+    </div>
+
+
+    <form action="/recommend_existing"
+          method="POST"
+          class="movie-form">
+
+        <select name="movie" required>
+
+            <option value="">
+                🎬 Select a Movie
+            </option>
+
+            {% for movie in movies %}
+
+            <option value="{{ movie }}"
+                {% if selected_movie == movie %}
+                    selected
+                {% endif %}>
+
+                {{ movie }}
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <button type="submit">
+            🔍 Recommend Movies
+        </button>
+
+    </form>
+
+</section>
+
+
+<!-- ================= CUSTOM MOVIE ================= -->
+
+<section class="section custom-section"
+         id="custom">
+
+    <div class="section-title">
+
+        <span>✨</span>
+
+        <div>
+            <h2>Create Your Own Movie</h2>
+
+            <p>
+                Enter your movie details and let our
+                recommendation system find similar movies.
+            </p>
+        </div>
+
+    </div>
+
+
+    <form action="/recommend_custom"
+          method="POST"
+          class="custom-form">
+
+
+        <div class="input-group">
+
+            <label>🎬 Movie Name</label>
+
+            <input type="text"
+                   name="title"
+                   placeholder="Example: Space Mission 2050"
+                   required>
+
+        </div>
+
+
+        <div class="input-group">
+
+            <label>🎭 Genre</label>
+
+            <input type="text"
+                   name="genre"
+                   placeholder="Action, Science Fiction, Adventure"
+                   required>
+
+        </div>
+
+
+        <div class="input-group full">
+
+            <label>📖 Movie Overview</label>
+
+            <textarea name="overview"
+                      placeholder="Describe your movie story..."
+                      required></textarea>
+
+        </div>
+
+
+        <div class="input-group">
+
+            <label>🔑 Keywords</label>
+
+            <input type="text"
+                   name="keywords"
+                   placeholder="space, future, astronaut">
+
+        </div>
+
+
+        <div class="input-group">
+
+            <label>👥 Cast</label>
+
+            <input type="text"
+                   name="cast"
+                   placeholder="Tom Hanks, Emma Stone">
+
+        </div>
+
+
+        <div class="input-group">
+
+            <label>🎥 Director</label>
+
+            <input type="text"
+                   name="director"
+                   placeholder="Christopher Nolan">
+
+        </div>
+
+
+        <div class="full">
+
+            <button type="submit">
+                🤖 Find Similar Movies
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+<!-- ================= RESULTS ================= -->
+
+{% if recommendations %}
+
+<section class="results-section"
+         id="results">
+
+    <div class="results-heading">
+
+        <span>🍿</span>
+
+        <div>
+
+            <h2>Recommended Movies</h2>
+
+            {% if mode == "existing" %}
+
+            <p>
+                Because you liked
+                <strong>{{ selected_movie }}</strong>
+            </p>
+
+            {% elif mode == "custom" %}
+
+            <p>
+                Movies similar to
+                <strong>{{ custom_title }}</strong>
+            </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="movie-grid">
+
+        {% for movie in recommendations %}
+
+        <div class="movie-card">
+
+            <div class="poster">
+
+                <span class="movie-number">
+                    {{ loop.index }}
+                </span>
+
+                <div class="poster-icon">
+                    🎞️
+                </div>
+
+            </div>
+
+
+            <div class="movie-info">
+
+                <h3>
+                    {{ movie.title }}
+                </h3>
+
+                <div class="similarity">
+
+                    <div class="progress">
+
+                        <div class="progress-bar"
+                             style="width: {{ movie.score }}%;">
+                        </div>
+
+                    </div>
+
+                    <span>
+                        {{ movie.score }}% Match
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <p>
+        🎬 MovieMind
+    </p>
+
+    <p>
+        Movie Recommendation System
+        | Machine Learning Project
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>
